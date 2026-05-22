@@ -23,7 +23,7 @@ from backend.crawler import arun_many
 from backend.schema import HackathonDetails
 from backend.classifier import classify_and_register_hackathon, HAS_NIM, nim_client
 from backend.database import get_db_connection, release_db_connection
-from backend.discovery import discover_new_hackathons_async
+from backend.discovery import discover_new_hackathons_async, get_api_metadata
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -213,6 +213,24 @@ async def _process_one(url: str, markdown: str) -> List[str]:
     # Always use the original crawled URL as registration_url
     # NIM often returns garbage like "null", instructions, or partial URLs
     details.registration_url = url
+
+    # Merge structured metadata from Devpost API (more reliable than NIM for dates/prizes)
+    api_meta = get_api_metadata(url)
+    if api_meta:
+        if api_meta.get("start_date") and not _sanitize_date(details.start_date):
+            details.start_date = api_meta["start_date"]
+        if api_meta.get("end_date") and not _sanitize_date(details.end_date):
+            details.end_date = api_meta["end_date"]
+        if api_meta.get("deadline") and not _sanitize_date(details.registration_deadline):
+            details.registration_deadline = api_meta["deadline"]
+        if api_meta.get("prize") and (not details.prize_pool or details.prize_pool in ("Unknown", "Not Provided", "N/A", "TBD", "See listing")):
+            details.prize_pool = api_meta["prize"]
+        if api_meta.get("organizer") and (not details.organizer or details.organizer in ("Unknown", "Not Provided", "N/A")):
+            details.organizer = api_meta["organizer"]
+        if api_meta.get("tags") and not details.tags:
+            details.tags = api_meta["tags"]
+        if api_meta.get("title") and (not details.name or len(details.name) < 3):
+            details.name = api_meta["title"]
 
     # Taxonomy classification (sync, wraps DB call)
     logs.append("[+] Analyzing semantic taxonomy boundaries...")
