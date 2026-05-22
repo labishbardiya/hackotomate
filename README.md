@@ -2,6 +2,8 @@
 
 An AI-powered web aggregator that autonomously discovers hackathons from public directories, extracts structured metadata via **NVIDIA NIM LLM**, dynamically classifies them into emerging taxonomy tracks, and displays everything on a premium glassmorphic **Ocean Terminal** dashboard.
 
+### 🔗 [Live Demo → hackotomate.onrender.com](https://hackotomate.onrender.com)
+
 ---
 
 ## ✨ Features
