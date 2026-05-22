@@ -210,6 +210,10 @@ async def _process_one(url: str, markdown: str) -> List[str]:
         details = _heuristic_extraction(markdown, url)
         logs.append(f"[+] Heuristic extraction mapped: '{details.name}'")
 
+    # Always use the original crawled URL as registration_url
+    # NIM often returns garbage like "null", instructions, or partial URLs
+    details.registration_url = url
+
     # Taxonomy classification (sync, wraps DB call)
     logs.append("[+] Analyzing semantic taxonomy boundaries...")
     try:

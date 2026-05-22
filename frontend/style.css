@@ -634,6 +634,12 @@ html {
     border-color: var(--text-primary);
 }
 
+.btn-launch.btn-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .btn-share {
     width: 38px;
     height: 38px;

@@ -181,6 +181,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // Map tags
             const tagsHTML = (h.tags || []).slice(0, 4).map(t => `<span class="tag-pill">#${t.toLowerCase()}</span>`).join("");
             
+            // Validate registration URL — NIM sometimes returns "null" or garbage strings
+            const rawUrl = h.registration_url;
+            const hasValidUrl = rawUrl && rawUrl !== "null" && rawUrl !== "None" && rawUrl.startsWith("http");
+            const validUrl = hasValidUrl ? rawUrl : "#";
+            
             card.innerHTML = `
                 <div>
                     <div class="card-header">
@@ -207,10 +212,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 
                 <div class="card-actions">
-                    <a href="${h.registration_url}" target="_blank" class="btn btn-primary btn-launch font-mono text-uppercase">
+                    <a href="${validUrl}" target="_blank" class="btn btn-primary btn-launch font-mono text-uppercase ${!hasValidUrl ? 'btn-disabled' : ''}">
                         LAUNCH_PORTAL ↗
                     </a>
-                    <button class="btn btn-sec btn-share" data-title="${h.name}" data-url="${h.registration_url}">
+                    <button class="btn btn-sec btn-share" data-title="${h.name}" data-url="${validUrl}">
                         📤
                     </button>
                 </div>
