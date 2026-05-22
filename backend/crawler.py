@@ -98,36 +98,63 @@ def html_to_markdown(html: str, base_url: str) -> str:
 # Single-URL crawl
 # ---------------------------------------------------------------------------
 
+async def _crawl4ai_fetch(url: str) -> str:
+    """Crawl via crawl4ai (Playwright-based). Returns markdown or empty string."""
+    from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
+
+    browser_cfg = BrowserConfig(
+        headless=True,
+        verbose=False,
+        user_agent=_next_user_agent(),
+    )
+    run_cfg = CrawlerRunConfig(
+        word_count_threshold=10,
+        only_text=False,
+    )
+
+    async with AsyncWebCrawler(config=browser_cfg) as crawler:
+        result = await crawler.arun(url=url, config=run_cfg)
+
+    if result.success and result.html:
+        return html_to_markdown(result.html, url)
+    return ""
+
+
+async def _httpx_fetch(url: str) -> str:
+    """Simple HTTP fetch fallback using httpx + BeautifulSoup. No JS rendering."""
+    import httpx
+    import ssl
+
+    try:
+        async with httpx.AsyncClient(
+            verify=False,
+            timeout=15.0,
+            follow_redirects=True,
+            headers={"User-Agent": _next_user_agent(), "Accept": "text/html"},
+        ) as client:
+            resp = await client.get(url)
+            if resp.status_code == 200 and resp.text:
+                return html_to_markdown(resp.text, url)
+    except Exception as e:
+        print(f"[-] httpx fallback also failed for {url}: {e}")
+    return ""
+
+
 async def crawl_url(url: str) -> str:
     """
-    Crawl a single URL via crawl4ai's AsyncWebCrawler.
-    Returns cleaned markdown or empty string on failure.
+    Crawl a single URL. Tries crawl4ai (Playwright) first, falls back to
+    simple httpx fetch if Playwright isn't available or fails.
     """
     print(f"[+] Crawling: {url}")
     try:
-        from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
-
-        browser_cfg = BrowserConfig(
-            headless=True,
-            verbose=False,
-            user_agent=_next_user_agent(),
-        )
-        run_cfg = CrawlerRunConfig(
-            word_count_threshold=10,
-            only_text=False,
-        )
-
-        async with AsyncWebCrawler(config=browser_cfg) as crawler:
-            result = await crawler.arun(url=url, config=run_cfg)
-
-        if result.success and result.html:
-            return html_to_markdown(result.html, url)
-        else:
-            print(f"[-] Crawl returned no content for {url}: {result.error_message}")
-            return ""
+        result = await _crawl4ai_fetch(url)
+        if result:
+            return result
+        print(f"[~] crawl4ai returned empty for {url}, trying httpx fallback...")
     except Exception as e:
-        print(f"[-] Exception crawling {url}: {e}")
-        return ""
+        print(f"[~] crawl4ai unavailable ({type(e).__name__}), using httpx fallback for {url}")
+
+    return await _httpx_fetch(url)
 
 
 # ---------------------------------------------------------------------------
