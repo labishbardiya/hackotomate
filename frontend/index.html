@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="color-scheme" content="dark">
+    <title>OCEAN // HACKATHON_TERMINAL</title>
+    <!-- Standalone Mobile App Configuration -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#030508">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Core Style sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background cybernetic grid lines -->
+    <div class="cyber-grid"></div>
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- Main Application Shell -->
+    <div class="app-shell">
+        
+        <!-- Header Panel -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="terminal-prompt">SYSTEM_NODE //</div>
+                <h1 class="logo-text">OCEAN <span class="logo-slash">//</span> HACKATHONS</h1>
+                <p class="logo-subtext">Autonomous Ingestion & Dynamic Taxonomy Terminal</p>
+            </div>
+            <div class="header-right">
+                <!-- pulsing status indicator -->
+                <div id="status-indicator" class="status-badge connected">
+                    <span class="status-dot"></span>
+                    <span id="status-text" class="status-label">SYS_ONLINE</span>
+                </div>
+                <!-- pipeline triggers -->
+                <button id="btn-run-pipeline" class="btn btn-primary font-mono text-uppercase">
+                    <span class="btn-glow"></span>
+                    <span class="btn-icon">⚡</span> RUN_PIPELINE
+                </button>
+            </div>
+        </header>
+
+        <!-- Search & Control Toolbar -->
+        <section class="toolbar-panel">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Query Node: Filter by name, organizer, tags or details..." autocomplete="off">
+                <button id="btn-clear-search" class="clear-search-btn" style="display:none;">×</button>
+            </div>
+            <div class="toolbar-actions">
+                <button id="btn-reset-db" class="btn btn-sec btn-icon-only" title="Reset & Reseed Database">
+                    🔄 <span class="btn-tooltip">RESET_SYSTEM</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Dynamic Category Horizontal Scroller -->
+        <nav class="categories-nav">
+            <div class="categories-container" id="tracks-scroller">
+                <!-- JavaScript populated: e.g. [View All] [Generative Agents] [Decentralized Networks] -->
+                <div class="loading-scroller-placeholder">Initialising track registries...</div>
+            </div>
+        </nav>
+
+        <!-- Track Detailed Info Banner (dynamic description of active category) -->
+        <section id="track-banner" class="track-banner" style="display:none;">
+            <div class="banner-prompt">CLASSIFICATION_SIGNATURE:</div>
+            <h3 id="track-banner-title">Category Name</h3>
+            <p id="track-banner-desc">Category summary description.</p>
+        </section>
+
+        <!-- Main Content Area: Responsive Card Grid -->
+        <main class="main-viewport">
+            <div id="hackathons-grid" class="cards-grid">
+                <!-- Skeletons placeholders -->
+                <div class="card-skeleton">
+                    <div class="skele-meta"></div>
+                    <div class="skele-title"></div>
+                    <div class="skele-desc"></div>
+                    <div class="skele-tags"></div>
+                    <div class="skele-btn"></div>
+                </div>
+                <div class="card-skeleton">
+                    <div class="skele-meta"></div>
+                    <div class="skele-title"></div>
+                    <div class="skele-desc"></div>
+                    <div class="skele-tags"></div>
+                    <div class="skele-btn"></div>
+                </div>
+                <div class="card-skeleton">
+                    <div class="skele-meta"></div>
+                    <div class="skele-title"></div>
+                    <div class="skele-desc"></div>
+                    <div class="skele-tags"></div>
+                    <div class="skele-btn"></div>
+                </div>
+            </div>
+            <!-- Empty query fallback -->
+            <div id="empty-state" class="empty-state-panel" style="display:none;">
+                <div class="empty-icon">📂</div>
+                <h3>NO_NODES_FOUND</h3>
+                <p>No hackathon events match the selected track filter or search query. Try launching the scraper pipeline to harvest fresh data.</p>
+            </div>
+        </main>
+
+        <!-- Dynamic Floating Logging Terminal Panel -->
+        <footer id="log-console-panel" class="log-console-panel collapsed">
+            <div class="console-header" id="console-trigger">
+                <div class="header-left-info">
+                    <span class="console-indicator"></span>
+                    <span class="console-title font-mono text-uppercase">INGESTION_LOG_MONITOR</span>
+                </div>
+                <div class="header-right-actions">
+                    <button id="btn-close-console" class="console-btn-close">_</button>
+                </div>
+            </div>
+            <div class="console-body" id="console-output">
+                <div class="log-line text-muted font-mono">// Ready to monitor crawling sequences. Click 'RUN_PIPELINE' to initiate harvesting.</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

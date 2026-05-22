@@ -1,0 +1,33 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment variables (NEVER commit secrets)
+.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Playwright browsers cache
+ms-playwright/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
